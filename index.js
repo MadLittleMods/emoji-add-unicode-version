@@ -17,20 +17,20 @@ function unicodeToName(emojiUnicode) {
 
 
 const emojipediaUnicodeVersionUrlMap = {
-	1.1: 'http://emojipedia.org/unicode-1.1/',
-	3.0: 'http://emojipedia.org/unicode-3.0/',
-	3.2: 'http://emojipedia.org/unicode-3.2/',
-	4.0: 'http://emojipedia.org/unicode-4.0/',
-	4.1: 'http://emojipedia.org/unicode-4.1/',
-	5.1: 'http://emojipedia.org/unicode-5.1/',
-	5.2: 'http://emojipedia.org/unicode-5.2/',
-	6.0: 'http://emojipedia.org/unicode-6.0/',
-	6.1: 'http://emojipedia.org/unicode-6.1/',
-	7.0: 'http://emojipedia.org/unicode-7.0/',
-	8.0: 'http://emojipedia.org/unicode-8.0/',
-	9.0: 'http://emojipedia.org/unicode-9.0/',
-	10.0: 'http://emojipedia.org/unicode-10.0/',
-	11.0: 'http://emojipedia.org/unicode-11.0/'
+	'1.1': 'http://emojipedia.org/unicode-1.1/',
+	'3.0': 'http://emojipedia.org/unicode-3.0/',
+	'3.2': 'http://emojipedia.org/unicode-3.2/',
+	'4.0': 'http://emojipedia.org/unicode-4.0/',
+	'4.1': 'http://emojipedia.org/unicode-4.1/',
+	'5.1': 'http://emojipedia.org/unicode-5.1/',
+	'5.2': 'http://emojipedia.org/unicode-5.2/',
+	'6.0': 'http://emojipedia.org/unicode-6.0/',
+	'6.1': 'http://emojipedia.org/unicode-6.1/',
+	'7.0': 'http://emojipedia.org/unicode-7.0/',
+	'8.0': 'http://emojipedia.org/unicode-8.0/',
+	'9.0': 'http://emojipedia.org/unicode-9.0/',
+	'10.0': 'http://emojipedia.org/unicode-10.0/',
+	'11.0': 'http://emojipedia.org/unicode-11.0/'
 };
 
 
@@ -52,7 +52,7 @@ const addingEmojipediaUnicodeVersionPromises = Object.keys(emojipediaUnicodeVers
 				});
 		})
 		.then((html) => {
-			scrapeEmojipediaHtml(emojiMap, html, parseFloat(unicodeVersionKey));
+			scrapeEmojipediaHtml(emojiMap, html, unicodeVersionKey);
 		})
 });
 
@@ -113,17 +113,22 @@ function fillZwjSequenceUnicodeVersions(emojiMap) {
 		// If general ZWJ sequence
 		else if(!emoji.unicode_version && emojiHexCodePoints.length > 1) {
 			// Find the emoji of the ZWJ sequence with the highest unicode version
-			emoji.unicode_version = emojiHexCodePoints.reduce((unicodeVersion, hexCodePoint) => {
+			let unicodeVersionString;
+			emojiHexCodePoints.reduce((unicodeVersion, hexCodePoint) => {
 				var emojiUnicode = String.fromCodePoint(parseInt(hexCodePoint, 16));
 				const emojiNameKey = unicodeToName(emojiUnicode);
 				const emoji = emojiMap[emojiNameKey];
+				const parsedVersion = emoji && parseFloat(emoji.unicode_version);
 
-				if(emoji && emoji.unicode_version > unicodeVersion) {
-					unicodeVersion = emoji.unicode_version;
+				if(parsedVersion > unicodeVersion) {
+					unicodeVersion = parsedVersion;
+					unicodeVersionString = emoji.unicode_version;
 				}
 
 				return unicodeVersion;
-			}, 0) || false;
+			}, 0);
+
+			emoji.unicode_version = unicodeVersionString || false;
 		}
 	});
 }
