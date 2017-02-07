@@ -1,5 +1,10 @@
 # Add `unicode_version` to emoji JSON map
 
+This project has been **deprecated** in favor of https://github.com/MadLittleMods/emoji-unicode-version
+
+Add the unicode version for each emoji in a emojione/gemojione JSON map
+
+
 ```
 npm start
 ```
